@@ -1,0 +1,108 @@
+@font-face {
+  font-family: 'Alliance-Medium';
+  src: local('Alliance-Medium'), url(./AllianceMedium.otf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Alliance-SemiBold';
+  src: local('Alliance-SemiBold'), url(./AllianceSemiBold.otf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Alliance-Bold';
+  src: local('Alliance-Bold'), url(./AllianceBold.otf) format('truetype');
+}
+
+.App {
+  color: #ffffff;
+  text-align: center;
+  margin-left:auto;
+  margin-right:auto;
+  height:auto; 
+  width:auto;
+}
+
+.NN {
+  display: none;
+}
+
+* {
+  font-family: Alliance-Medium;
+  box-sizing: border-box;
+}
+
+div {
+  display: block;
+  font-size: large;
+  align-items: center;
+  padding: 1%;
+}
+
+span {
+  font-size: 80%;
+  color: #606060;
+}
+
+input {
+  color: #ffffff;
+  align-content: center;
+  background-color: transparent;
+  text-decoration: none;
+  padding-top: 1%;
+  padding-bottom: 1%;
+  padding-left: 4%;
+  padding-right: 4%;
+  border-radius: 10px;
+  border: 3px solid #ffffff;
+}
+
+button {
+  color: #000000;
+  background-color: #ffffff;
+  font-family: Alliance-SemiBold;
+  text-decoration: none;
+  padding-top: 0.75%;
+  padding-bottom: 0.75%;
+  padding-left: 2%;
+  padding-right: 2%;
+  border-radius: 9px;
+  border: 3px solid #ffffff;
+}
+
+video {
+  object-fit: cover;
+  opacity: 15%;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.subClass {
+  display: block;
+}
+
+p {
+  font-size: 200%;
+}
+
+@media screen  and (max-width: 1000px) {
+  button, input {
+    font-size: 75%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    padding-left: 5%;
+    padding-right: 5%;
+    border-radius: 6px;
+  }
+  
+  span {
+    font-size: 50%;
+  }
+
+  div {
+    margin-bottom: 5%;
+  }
+}

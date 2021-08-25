@@ -1,5 +1,12 @@
 {
     "python.analysis.extraPaths": [
         "./scripts"
-    ]
+    ],
+    "python.linting.enabled": false,
+    "vsintellicode.features.python.deepLearning": "enabled",
+    "python.analysis.completeFunctionParens": true,
+    "python.autoComplete.addBrackets": true,
+    "python.analysis.memory.keepLibraryAst": true,
+    "editor.autoClosingBrackets": "always",
+    "python.formatting.provider": "black"
 }

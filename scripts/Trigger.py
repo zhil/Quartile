@@ -32,21 +32,34 @@ def storeLastSeenId(lastSeenId, file_name):
 
 def check():
     mentions = tweepyAPISession.list_direct_messages()
-
+    # print(mentions)
     lastSeenId = retrieveLastSeenId(FILE_NAME)
-    DMCheckIDs = [mention._json['id'] for mention in mentions] 
-    storeLastSeenId(DMCheckIDs[0], FILE_NAME)
+    DMCheckIDs = [[mention._json['id'], mention._json['message_create']['message_data']['text']] for mention in mentions] 
+    try:
+        storeLastSeenId(DMCheckIDs[0][0], FILE_NAME)
+    except:
+        print("Didn't find anything....continuing")
+        pass
     
     for indx in range(0, len(DMCheckIDs)):
         # print(DMCheckIDs[indx])
-        if int(DMCheckIDs[indx])==lastSeenId:
+        if int(DMCheckIDs[indx][0])==lastSeenId:
             return
         
-        # Quartile.replyToTweets(mentions[indx])
+        if 'mint' in DMCheckIDs[indx][1]:
+            print('works')
+            print(mentions[indx])
+            urlRedirect = Quartile.replyToTweets(mentions[indx])
+            print('returns')
+            tweepyAPISession.send_direct_message(mentions[indx]._json['message_create']['sender_id'], 'Thank you for using our service, please find your lazy minted NFT here: ' + urlRedirect)
+            tweepyAPISession.update_status('Hey folks!\nWe just found a new Lazy minted NFT listed on Rarible. Check this out ' + urlRedirect)
+        elif 'buy' in DMCheckIDs[indx][1]:
+            urlRedirect = Quartile.NFTSeller(mentions[indx])
+            tweepyAPISession.send_direct_message(mentions[indx]._json['message_create']['sender_id'], 'Thank you for using our service, please check out on your payments here: ' + urlRedirect)
 
 
 while True:
     print('Quartile is up and running...', flush=True)
     check()
-    n = random.randint(1, 10)
+    n = random.randint(5, 10)
     time.sleep(n)
