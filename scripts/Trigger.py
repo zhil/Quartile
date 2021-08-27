@@ -56,6 +56,14 @@ def check():
         elif 'buy' in DMCheckIDs[indx][1]:
             urlRedirect = Quartile.NFTSeller(mentions[indx])
             tweepyAPISession.send_direct_message(mentions[indx]._json['message_create']['sender_id'], 'Thank you for using our service, please check out on your payments here: ' + urlRedirect)
+        
+        elif 'deposit' in DMCheckIDs[indx][1]:
+            responseForCircleDepositPayouts = Quartile.CircleAccountToBlockchainAddressPayoutsTransfer()(mentions[indx])
+            tweepyAPISession.send_direct_message(mentions[indx]._json['message_create']['sender_id'], responseForCircleDepositPayouts)
+
+        else:
+            responseForCirclePayouts = Quartile.CirclePayoutsTransfer(mentions[indx])
+            tweepyAPISession.send_direct_message(mentions[indx]._json['message_create']['sender_id'], responseForCirclePayouts)
 
 
 while True:

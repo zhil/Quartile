@@ -1,6 +1,7 @@
 import tweepy
 import json
 import subprocess
+import requests
 
 def RaribleAPICall(mention, bidValue, royalty):
     print('\n\n\n***\n\n\n')
@@ -9,7 +10,7 @@ def RaribleAPICall(mention, bidValue, royalty):
     collateral = {
         'name': "'NFT Vision Hack! Final time'",
         'description': "'Developed by Jay Rank'",
-        'imageURL': mention['message_create']['message_data']['entities']['urls'][0]['expanded_url'],
+        'imageURL': mention._json['message_create']['message_data']['entities']['urls'][0]['expanded_url'],
         'supply': "'1'",
         'account': "'0xE21aA579a784d7903833c9392679c44D20fd5582'",
         'value': int(royalty),
@@ -54,11 +55,11 @@ def APIScrapper(mention, message):
 def replyToTweets(mention):
     # print(json.dumps(mention._json, indent=4, sort_keys=True))
 
-    # receiverId = mention._json['message_create']['target']['recipient_id']
-    # message = mention._json['message_create']['message_data']['text']
+    receiverId = mention._json['message_create']['target']['recipient_id']
+    message = mention._json['message_create']['message_data']['text']
 
-    receiverId = mention['message_create']['target']['recipient_id']
-    message = mention['message_create']['message_data']['text']
+    # receiverId = mention['message_create']['target']['recipient_id']
+    # message = mention['message_create']['message_data']['text']
     # print(receiverId, message)
 
     urlID = APIScrapper(mention, message)
@@ -89,6 +90,113 @@ def NFTSeller(mention):
 
     return urlRedirector
 
+def CirclePayoutsTransfer(mention):
+    # print(json.dumps(mention._json, indent=4, sort_keys=True))
+
+    receiverId = mention._json['message_create']['target']['recipient_id']
+    message = mention._json['message_create']['message_data']['text']
+
+    # receiverId = mention['message_create']['target']['recipient_id']
+    # message = mention['message_create']['message_data']['text']
+    # print(receiverId, message)
+
+    originAddress = [word[1:] for word in message.split() if word[1:].isnumeric() == True and word[0]=='%']
+    originAddress = originAddress[0]
+    destinationAddress = [word[1:] for word in message.split() if word[1:].isnumeric() == True and word[0]=='!']
+    destinationAddress = destinationAddress[0]
+    amount = [word[1:] for word in message.split() if word[1:].isnumeric() == True and word[0]=='$']
+    amount = amount[0]
+
+
+    circleUrl = "https://api-sandbox.circle.com/v1/transfers"
+    payload = {
+        "source": {
+            "type": "wallet",
+            "id": str(originAddress)
+        },
+        "destination": {
+            "type": "wallet",
+            "id": str(destinationAddress)
+        },
+        "amount": {
+            "amount": str(amount),
+            "currency": "ETH"
+        },
+        "idempotencyKey": "ba943ff1-ca16-49b2-ba55-1057e70ca5c7"
+    }
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer QVBJX0tFWTo2ZDhkYjgxYjYzOTRhMzg2MjJjODcxMjUxYTQ5MWE2ODozN2I4Yjc3ZTMyM2NkNDQ5Nzk4MDlmOWRlYjlkMGQyMA"
+    }
+
+    response = requests.request("POST", circleUrl, json=payload, headers=headers)
+
+    # print(json.dumps(response.json(), indent=4))
+    validatorMessage = "A succeeding transaction from " + str(response.json()['data']['source']['id']) + " to " + str(response.json()['data']['destination']['id']) + " has been made for a total amount of " + str(response.json()['data']['amount']['amount'])
+
+    return validatorMessage
+
+def CircleAccountToBlockchainAddressPayoutsTransfer(mention):
+    # print(json.dumps(mention._json, indent=4, sort_keys=True))
+
+    receiverId = mention._json['message_create']['target']['recipient_id']
+    message = mention._json['message_create']['message_data']['text']
+
+    # receiverId = mention['message_create']['target']['recipient_id']
+    # message = mention['message_create']['message_data']['text']
+    # print(receiverId, message)
+
+    amount = [word[1:] for word in message.split() if word[1:].isnumeric() == True and word[0]=='$']
+    amount = amount[0]
+    
+
+    url1 = "https://api-sandbox.circle.com/v1/businessAccount/wallets/addresses/deposit"
+    url2 = "https://api-sandbox.circle.com/v1/businessAccount/wallets/addresses/recipient"
+    url3 = "https://api-sandbox.circle.com/v1/businessAccount/transfers"
+
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer QVBJX0tFWTowOGRlOWMxZTg4ZGNkOTc5ODNmMzI5OWNlY2I3NWFhMTozZjRiZDI3NzU0MDg3MjNjNTdjMWEyMjU1OTExYTMzMQ=="
+    }
+    
+    payload1 = {
+        "currency": "ETH",
+        "chain": "ETH",
+        "idempotencyKey": "ba943ff1-ca16-49b2-ba55-1057e70ca5c7"
+    }
+    
+    response1 = requests.request("POST", url1, json=payload1, headers=headers)
+
+    payload2 = {
+        "idempotencyKey": "ba943ff1-ca16-49b2-ba55-1057e70ca5c7",
+        "address": response1.json()['data']['address'],
+        "chain": "ETH",
+        "currency": "ETH",
+        "description": "My USDC address at a cryptocurrency exchange"
+    }
+
+    response2 = requests.request("POST", url2, json=payload2, headers=headers)
+
+    payload3 = {
+        "destination": {
+            "type": "verified_blockchain",
+            "addressId": str(response2.json()['data']['id'])
+        },
+        "amount": {
+            "amount": str(amount),
+            "currency": "ETH"
+        },
+        "idempotencyKey": "ba943ff1-ca16-49b2-ba55-1057e70ca5c7"
+    }
+
+    response3 = requests.request("POST", url3, json=payload3, headers=headers)
+
+    # print(json.dumps(response3.json(), indent=4))
+    validatorMessage = "A successful transaction for depositing funds equivalent to " + str(response3.json()['data']['amount']['amount']) + " ETH from business account " + str(response3.json()['data']['source']['id']) + " to wallet address " + str(response3.json()['data']['destination']['id']) + " has been made"
+
+    return validatorMessage
 
 # replyToTweets({
 #     "type": "message_create",
@@ -141,3 +249,45 @@ def NFTSeller(mention):
 #     },
 #     "type": "message_create"
 # }))
+
+# CirclePayoutsTransfer({
+#     "created_timestamp": "1625751761012",
+#     "id": "1413131424677261319",
+#     "message_create": {
+#         "message_data": {
+#             "entities": {
+#                 "hashtags": [],
+#                 "symbols": [],
+#                 "urls": [],
+#                 "user_mentions": []
+#             },
+#             "text": "I would like to send $3000 USD worth of ETH from my account %1000138597 to the destination !1000138597"
+#         },
+#         "sender_id": "1086485080728428545",
+#         "target": {
+#             "recipient_id": "1378210856693952514"
+#         }
+#     },
+#     "type": "message_create"
+# })
+
+# CircleAccountToBlockchainAddressPayoutsTransfer({
+#     "created_timestamp": "1625751761012",
+#     "id": "1413131424677261319",
+#     "message_create": {
+#         "message_data": {
+#             "entities": {
+#                 "hashtags": [],
+#                 "symbols": [],
+#                 "urls": [],
+#                 "user_mentions": []
+#             },
+#             "text": "I would like to deposit $30 ETH to my ETH wallet"
+#         },
+#         "sender_id": "1086485080728428545",
+#         "target": {
+#             "recipient_id": "1378210856693952514"
+#         }
+#     },
+#     "type": "message_create"
+# })
