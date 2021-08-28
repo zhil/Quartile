@@ -13,7 +13,7 @@ tweepyAPISession = tweepy.API(tweepyAuth)
 
 
 # Change the Owner Name here in order to get admin access and privileges
-OWNER_NAME = "triquetraBot"
+OWNER_NAME = "quartileBot"
 FILE_NAME = 'scripts/LastSeenId.txt'
 # =====================================================================
 
@@ -32,7 +32,7 @@ def storeLastSeenId(lastSeenId, file_name):
 
 def check():
     mentions = tweepyAPISession.list_direct_messages()
-    # print(mentions)
+
     lastSeenId = retrieveLastSeenId(FILE_NAME)
     DMCheckIDs = [[mention._json['id'], mention._json['message_create']['message_data']['text']] for mention in mentions] 
     try:
@@ -42,7 +42,7 @@ def check():
         pass
     
     for indx in range(0, len(DMCheckIDs)):
-        # print(DMCheckIDs[indx])
+
         if int(DMCheckIDs[indx][0])==lastSeenId:
             return
         
@@ -58,7 +58,7 @@ def check():
             tweepyAPISession.send_direct_message(mentions[indx]._json['message_create']['sender_id'], 'Thank you for using our service, please check out on your payments here: ' + urlRedirect)
         
         elif 'deposit' in DMCheckIDs[indx][1]:
-            responseForCircleDepositPayouts = Quartile.CircleAccountToBlockchainAddressPayoutsTransfer()(mentions[indx])
+            responseForCircleDepositPayouts = Quartile.CircleAccountToBlockchainAddressPayoutsTransfer(mentions[indx])
             tweepyAPISession.send_direct_message(mentions[indx]._json['message_create']['sender_id'], responseForCircleDepositPayouts)
 
         else:
