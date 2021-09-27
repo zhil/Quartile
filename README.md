@@ -84,4 +84,4 @@ python scripts/Trigger.py
 
 # Acknowledgements
 
-- [NFT Vision Hack - Rarible Track](https://nftvisionhack.com/) : 1st Price Winner
+- [NFT Vision Hack - Rarible Track](https://nftvisionhack.com/) : 1st Prize Winner
